@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="lib" path="lib/smack.jar" sourcepath="/home/ustaudinger/smack_src_3_1_0/source"/>
+	<classpathentry exported="true" kind="lib" path="lib/smackx-debug.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/smackx-jingle.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/smackx.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-logging-1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ws-commons-util-1.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xmlrpc-client-3.1.1-javadoc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xmlrpc-client-3.1.1-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xmlrpc-client-3.1.1.jar" sourcepath="lib/xmlrpc-client-3.1.1-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xmlrpc-common-3.1.1-javadoc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xmlrpc-common-3.1.1-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xmlrpc-common-3.1.1.jar" sourcepath="lib/xmlrpc-common-3.1.1-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xmlrpc-server-3.1.1-javadoc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xmlrpc-server-3.1.1-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xmlrpc-server-3.1.1.jar" sourcepath="lib/xmlrpc-server-3.1.1-sources.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

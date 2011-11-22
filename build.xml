@@ -1,0 +1,18 @@
+<project name="gui1" default="build" basedir=".">
+    <target name="build">
+       <mkdir dir="bin"/>
+       <mkdir dir="target"/>
+       <javac srcdir="src"
+             destdir="bin"
+             debug="on"
+      >
+        <classpath>
+          <fileset dir="lib">
+            <include name="**/*.jar"/>
+          </fileset>
+        </classpath>
+      </javac> 
+      <jar destfile="target/jabber-rpc.jar" basedir="bin"/>
+    </target>
+</project>
+
