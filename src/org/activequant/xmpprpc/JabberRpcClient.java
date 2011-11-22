@@ -18,35 +18,71 @@
  */
 package org.activequant.xmpprpc;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.activequant.xmpprpc.XmlRpcByteArrayTransport.XmlRpcByteArrayTransportFactory;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
+import org.jivesoftware.smack.Connection;
+import org.jivesoftware.smack.SASLAuthentication;
+import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPException;
 
 public class JabberRpcClient extends JabberRpcConnection {
 
 	private XmlRpcClient xmlRpcClient;
-	private String rpcServerJid; 
+	private String rpcServerJid;
 
-	public JabberRpcClient(String username, String server, String password, String resource, String serverJid) throws Exception {
+	public JabberRpcClient(String username, String server, String password,
+			String resource, String serverJid) throws Exception {
 		super(username, server, password, resource);
-		rpcServerJid = serverJid; 
-		
+		rpcServerJid = serverJid;
+
 		xmlRpcClient = new XmlRpcClient();
-		xmlRpcClient.setTransportFactory(new XmlRpcByteArrayTransportFactory(this, xmlRpcClient, rpcServerJid));
+		xmlRpcClient.setTransportFactory(new XmlRpcByteArrayTransportFactory(
+				this, xmlRpcClient, rpcServerJid));
 	}
-	
+
+	public JabberRpcClient(XMPPConnection conn, String serverJid)
+			throws Exception {
+		super(conn);
+		rpcServerJid = serverJid;
+
+		xmlRpcClient = new XmlRpcClient();
+		xmlRpcClient.setTransportFactory(new XmlRpcByteArrayTransportFactory(
+				this, xmlRpcClient, rpcServerJid));
+	}
+
 	/**
 	 * Execute a XML-RPC call on a server.
+	 * 
 	 * @param remoteMethodName
 	 * @param paramList
 	 * @return The return value from the remote call.
 	 * @throws XmlRpcException
 	 */
-	public synchronized 
-	Object execute(String remoteMethodName, List<Object> paramList) throws XmlRpcException
-	{
+	public synchronized Object execute(String remoteMethodName,
+			List<Object> paramList) throws XmlRpcException {
 		return xmlRpcClient.execute(remoteMethodName, paramList);
+	}
+	
+	public static void main(String[] args) throws Exception {
+		//Connection.DEBUG_ENABLED = true;
+
+		XMPPConnection clientConn = new XMPPConnection("localhost");
+		clientConn.connect();
+		clientConn.login("pierre-luc", "test", "rpc");
+		System.out.println("Connected");
+			
+		JabberRpcClient xmppRpcClient = new JabberRpcClient(clientConn, "rodney@localhost/rpc");
+
+		Thread tclient = new Thread(xmppRpcClient);
+		tclient.start();
+		Thread.sleep(1000);
+		
+		Object myRet = xmppRpcClient.execute("examples.getRandomQuote",
+				new ArrayList<Object>());
+		System.out.println("Got : " + myRet.toString());
 	}
 }

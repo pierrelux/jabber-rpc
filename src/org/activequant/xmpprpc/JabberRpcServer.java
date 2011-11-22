@@ -22,10 +22,12 @@ import java.util.ArrayList;
 
 import org.activequant.xmpprpc.examplehandler.XmlRpcExampleHandler;
 import org.apache.xmlrpc.XmlRpcException;
+import org.jivesoftware.smack.SASLAuthentication;
+import org.jivesoftware.smack.XMPPConnection;
 
 public class JabberRpcServer extends JabberRpcConnection {
 
-	private InstanceBasedHandler objectMapper;
+	private InstanceBasedHandler objectMapper = new InstanceBasedHandler();
 
 	/**
 	 * Construct a Jabber-RPC Server to expose a given object.
@@ -44,7 +46,16 @@ public class JabberRpcServer extends JabberRpcConnection {
 			String resource) throws Exception {
 		super(username, server, password, resource);
 
-		objectMapper = new InstanceBasedHandler();
+		setHandlerMapping(objectMapper);
+	}
+	
+	/**
+	 * Construct a Jabber-RPC Server to expose a given object.
+	 * @param conn An existing XMPPConnection, connected and logged-in
+	 * @throws Exception
+	 */
+	public JabberRpcServer(XMPPConnection conn) throws Exception {
+		super(conn);
 
 		setHandlerMapping(objectMapper);
 	}
@@ -68,25 +79,18 @@ public class JabberRpcServer extends JabberRpcConnection {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
-
-		JabberRpcServer jabberRpcServer = new JabberRpcServer("rodney",
-				"localhost", "brooks", "rpc");
+		XMPPConnection serverConn = new XMPPConnection("localhost");
+		serverConn.connect();
+		serverConn.login("rodney", "brooks", "rpc");
+		System.out.println("Connected");
+		
+		//JabberRpcServer jabberRpcServer = new JabberRpcServer("rodney",
+		//		"localhost", "brooks", "rpc");
+		JabberRpcServer jabberRpcServer = new JabberRpcServer(serverConn);
 		jabberRpcServer.exposeObject("examples", new XmlRpcExampleHandler());
-		jabberRpcServer.connectToXmppServer();
+		//jabberRpcServer.connectToXmppServer();
 
 		Thread tserver = new Thread(jabberRpcServer);
 		tserver.start();
-		Thread.sleep(1000);
-
-		JabberRpcClient xmppRpcClient = new JabberRpcClient("pierre-luc",
-				"localhost", "test", "rpc", "rodney@localhost/rpc");
-		xmppRpcClient.connectToXmppServer();
-		Thread tclient = new Thread(xmppRpcClient);
-		tclient.start();
-		Thread.sleep(1000);
-
-		Object myRet = xmppRpcClient.execute("examples.getRandomQuote",
-				new ArrayList<Object>());
-		System.out.println("Got : " + myRet.toString());
 	}
 }

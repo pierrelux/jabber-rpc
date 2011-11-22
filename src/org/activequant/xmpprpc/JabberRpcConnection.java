@@ -44,10 +44,10 @@ public class JabberRpcConnection implements Runnable {
 	private String resource;
 	private boolean exitFlag = true;
 
-	private XmlRpcByteArrayProcessor xmlRpcProcessor;
+	private XmlRpcByteArrayProcessor xmlRpcProcessor = new XmlRpcByteArrayProcessor();;
 	private XMPPConnection connection;
 
-	private Hashtable<String, BlockingQueue<String>> packetIdToRpcRequests;
+	private Hashtable<String, BlockingQueue<String>> packetIdToRpcRequests = new Hashtable<String, BlockingQueue<String>>();
 
 	public JabberRpcConnection(String aUsername, String aServer, String aPassword,
 			String aResource) throws Exception {
@@ -55,28 +55,35 @@ public class JabberRpcConnection implements Runnable {
 		server = aServer;
 		password = aPassword;
 		resource = aResource;
-		xmlRpcProcessor = new XmlRpcByteArrayProcessor();
-		packetIdToRpcRequests = new Hashtable<String, BlockingQueue<String>>();
 	}
 
+	public JabberRpcConnection(XMPPConnection conn) throws Exception {
+		connection = conn; 
+		installFilter();
+	}
+	
 	/**
 	 * Establish a connection to a XMPP server and install RPC IQ handlers.
 	 * 
 	 * @throws XMPPException
 	 */
 	public void connectToXmppServer() throws XMPPException {
-		// Register an IQ provider for jabber-rpc
-		ProviderManager.getInstance().addIQProvider("query", "jabber:iq:rpc",
-				new RpcIqProvider());
-
 		// Connect
 		connection = new XMPPConnection(server);
 		connection.connect();
 
 		// Login
-		SASLAuthentication.supportSASLMechanism("PLAIN", 0);
 		connection.login(username, password, resource);
 
+		installFilter();
+	}
+
+	protected void installFilter()
+	{
+		// Register an IQ provider for jabber-rpc
+		ProviderManager.getInstance().addIQProvider("query", "jabber:iq:rpc",
+				new RpcIqProvider());
+		
 		// Install RPC IQ Filter
 		PacketFilter incomingIqSetFilter = new AndFilter(new PacketTypeFilter(
 				IQ.class));
@@ -95,7 +102,7 @@ public class JabberRpcConnection implements Runnable {
 		// Register the listener.
 		connection.addPacketListener(myListenerSet, incomingIqSetFilter);
 	}
-
+	
 	/**
 	 * Get the RPC response queue for some packet id.
 	 * 
@@ -172,7 +179,8 @@ public class JabberRpcConnection implements Runnable {
 	 * @return A string of the form user@server.com/resource
 	 */
 	public String getJid() {
-		return username + "@" + server + "/" + resource;
+		System.out.println("Connection " + connection.getUser());
+		return connection.getUser();
 	}
 	
 	/**
@@ -184,6 +192,10 @@ public class JabberRpcConnection implements Runnable {
 		connection.sendPacket(packet);	
 	}
 	
+	/**
+	 * Set a handler mapping.
+	 * @param pMapping
+	 */
 	void setHandlerMapping(XmlRpcHandlerMapping pMapping) 
 	{
 		xmlRpcProcessor.setHandlerMapping(pMapping);
