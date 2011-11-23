@@ -84,13 +84,8 @@ public class JabberRpcServer extends JabberRpcConnection {
 		serverConn.login("rodney", "brooks", "rpc");
 		System.out.println("Connected");
 		
-		//JabberRpcServer jabberRpcServer = new JabberRpcServer("rodney",
-		//		"localhost", "brooks", "rpc");
 		JabberRpcServer jabberRpcServer = new JabberRpcServer(serverConn);
 		jabberRpcServer.exposeObject("examples", new XmlRpcExampleHandler());
-		//jabberRpcServer.connectToXmppServer();
-
-		Thread tserver = new Thread(jabberRpcServer);
-		tserver.start();
+		jabberRpcServer.start();
 	}
 }

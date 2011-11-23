@@ -76,13 +76,14 @@ public class JabberRpcClient extends JabberRpcConnection {
 		System.out.println("Connected");
 			
 		JabberRpcClient xmppRpcClient = new JabberRpcClient(clientConn, "rodney@localhost/rpc");
-
-		Thread tclient = new Thread(xmppRpcClient);
-		tclient.start();
+		xmppRpcClient.start();
 		Thread.sleep(1000);
 		
+		for (int i = 0; i < 2; i++) {
 		Object myRet = xmppRpcClient.execute("examples.getRandomQuote",
 				new ArrayList<Object>());
 		System.out.println("Got : " + myRet.toString());
+		}
+		xmppRpcClient.stop();
 	}
 }

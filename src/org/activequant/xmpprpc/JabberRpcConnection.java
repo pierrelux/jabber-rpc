@@ -42,7 +42,7 @@ public class JabberRpcConnection implements Runnable {
 	private String password;
 	private String server;
 	private String resource;
-	private boolean exitFlag = true;
+    private volatile Thread rpcThread;
 
 	private XmlRpcByteArrayProcessor xmlRpcProcessor = new XmlRpcByteArrayProcessor();;
 	private XMPPConnection connection;
@@ -201,15 +201,30 @@ public class JabberRpcConnection implements Runnable {
 		xmlRpcProcessor.setHandlerMapping(pMapping);
 	}
 	
+	/**
+	 * Start processing Jabber-RPC IQ in a thread.
+	 */
+    public void start() {
+        rpcThread = new Thread(this);
+        rpcThread.start();
+    }
+ 
+    /**
+     * Stop processing Jabber-RPC IQ by stopping the internal thread.
+     */
+    public void stop() {
+    	rpcThread = null;
+    }
+    
 	@Override
 	public void run() {
-		// TODO Rewrite this. 
-		while (exitFlag) {
-			try {
-				Thread.sleep(100);
-			} catch (Exception anEx) {
-				anEx.printStackTrace();
-			}
-		}
+        Thread thisThread = Thread.currentThread();
+        while (rpcThread == thisThread) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e){
+            }
+        }
 	}
+
 }
