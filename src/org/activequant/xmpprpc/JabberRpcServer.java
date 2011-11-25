@@ -18,11 +18,8 @@
  */
 package org.activequant.xmpprpc;
 
-import java.util.ArrayList;
-
 import org.activequant.xmpprpc.examplehandler.XmlRpcExampleHandler;
 import org.apache.xmlrpc.XmlRpcException;
-import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.XMPPConnection;
 
 public class JabberRpcServer extends JabberRpcConnection {
@@ -44,7 +41,7 @@ public class JabberRpcServer extends JabberRpcConnection {
 	 */
 	public JabberRpcServer(String username, String server, String password,
 			String resource) throws Exception {
-		super(username, server, password, resource);
+		super(username, server, password, resource, Role.SERVER);
 
 		setHandlerMapping(objectMapper);
 	}
@@ -55,7 +52,7 @@ public class JabberRpcServer extends JabberRpcConnection {
 	 * @throws Exception
 	 */
 	public JabberRpcServer(XMPPConnection conn) throws Exception {
-		super(conn);
+		super(conn, Role.SERVER);
 
 		setHandlerMapping(objectMapper);
 	}
@@ -79,7 +76,7 @@ public class JabberRpcServer extends JabberRpcConnection {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
-		XMPPConnection serverConn = new XMPPConnection("localhost");
+		XMPPConnection serverConn = new XMPPConnection("merlin");
 		serverConn.connect();
 		serverConn.login("rodney", "brooks", "rpc");
 		System.out.println("Connected");

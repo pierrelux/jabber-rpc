@@ -19,7 +19,6 @@
 package org.activequant.xmpprpc;
 
 import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.util.StringUtils;
 
 public class RpcIQ extends IQ {
 

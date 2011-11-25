@@ -86,6 +86,7 @@ class InstanceXmlRpcHandler implements XmlRpcHandler {
 		theObject = anObject;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Object execute(XmlRpcRequest pRequest) throws XmlRpcException {
 

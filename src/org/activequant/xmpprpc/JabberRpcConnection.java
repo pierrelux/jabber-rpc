@@ -26,7 +26,6 @@ import java.util.concurrent.SynchronousQueue;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.server.XmlRpcHandlerMapping;
 import org.jivesoftware.smack.PacketListener;
-import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.AndFilter;
@@ -48,17 +47,21 @@ public class JabberRpcConnection implements Runnable {
 	private XMPPConnection connection;
 
 	private Hashtable<String, BlockingQueue<String>> packetIdToRpcRequests = new Hashtable<String, BlockingQueue<String>>();
+	enum Role {SERVER, CLIENT};
+	private Role role;
 
 	public JabberRpcConnection(String aUsername, String aServer, String aPassword,
-			String aResource) throws Exception {
+			String aResource, Role connRole) throws Exception {
 		username = aUsername;
 		server = aServer;
 		password = aPassword;
 		resource = aResource;
+		role = connRole;
 	}
 
-	public JabberRpcConnection(XMPPConnection conn) throws Exception {
+	public JabberRpcConnection(XMPPConnection conn, Role connRole) throws Exception {
 		connection = conn; 
+		role = connRole;
 		installFilter();
 	}
 	
@@ -92,7 +95,6 @@ public class JabberRpcConnection implements Runnable {
 		// PacketListener object
 		PacketListener myListenerSet = new PacketListener() {
 			public void processPacket(Packet packet) {
-				// Do something with the incoming packet here.
 				if (packet instanceof RpcIQ) {
 					handleRpcPacket((RpcIQ) packet);
 				}
@@ -126,8 +128,13 @@ public class JabberRpcConnection implements Runnable {
 	public void handleRpcPacket(RpcIQ aPacket) {
 		try {
 			RpcIQ incomingRpcIQ = (RpcIQ) aPacket;
-
+			
 			if (incomingRpcIQ.getType() == Type.SET) {
+				if (role == Role.CLIENT) {
+					System.out.println("Received method call on RPC client connection. Ignoring.");
+					return;
+				}
+				
 				String response = xmlRpcProcessor.execute(incomingRpcIQ
 						.getPayload());
 
@@ -179,7 +186,6 @@ public class JabberRpcConnection implements Runnable {
 	 * @return A string of the form user@server.com/resource
 	 */
 	public String getJid() {
-		System.out.println("Connection " + connection.getUser());
 		return connection.getUser();
 	}
 	

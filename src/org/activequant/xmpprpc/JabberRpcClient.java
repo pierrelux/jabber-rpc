@@ -25,9 +25,7 @@ import org.activequant.xmpprpc.XmlRpcByteArrayTransport.XmlRpcByteArrayTransport
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.jivesoftware.smack.Connection;
-import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.XMPPException;
 
 public class JabberRpcClient extends JabberRpcConnection {
 
@@ -36,7 +34,7 @@ public class JabberRpcClient extends JabberRpcConnection {
 
 	public JabberRpcClient(String username, String server, String password,
 			String resource, String serverJid) throws Exception {
-		super(username, server, password, resource);
+		super(username, server, password, resource, Role.CLIENT);
 		rpcServerJid = serverJid;
 
 		xmlRpcClient = new XmlRpcClient();
@@ -46,7 +44,7 @@ public class JabberRpcClient extends JabberRpcConnection {
 
 	public JabberRpcClient(XMPPConnection conn, String serverJid)
 			throws Exception {
-		super(conn);
+		super(conn, Role.CLIENT);
 		rpcServerJid = serverJid;
 
 		xmlRpcClient = new XmlRpcClient();
@@ -68,14 +66,14 @@ public class JabberRpcClient extends JabberRpcConnection {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		//Connection.DEBUG_ENABLED = true;
+		Connection.DEBUG_ENABLED = true;
 
-		XMPPConnection clientConn = new XMPPConnection("localhost");
+		XMPPConnection clientConn = new XMPPConnection("merlin");
 		clientConn.connect();
-		clientConn.login("pierre-luc", "test", "rpc");
+		clientConn.login("rodney", "brooks", "rpcclient");
 		System.out.println("Connected");
 			
-		JabberRpcClient xmppRpcClient = new JabberRpcClient(clientConn, "rodney@localhost/rpc");
+		JabberRpcClient xmppRpcClient = new JabberRpcClient(clientConn, "rodney@merlin/rpc");
 		xmppRpcClient.start();
 		Thread.sleep(1000);
 		

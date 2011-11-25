@@ -35,6 +35,7 @@ import org.jivesoftware.smack.packet.IQ.Type;
 import org.xml.sax.SAXException;
 
 public class XmlRpcByteArrayTransport extends XmlRpcStreamTransport {
+	private static final int POLL_MAX_MS = 300;
 	private ByteArrayInputStream inputStream;
 	private ByteArrayOutputStream outputStream;
 	private String packetId = null;
@@ -70,13 +71,12 @@ public class XmlRpcByteArrayTransport extends XmlRpcStreamTransport {
 	protected InputStream getInputStream() throws XmlRpcException {
 		try {
 			// have to wait for the response return ... must be a blocking call
-			// ...
 			String response = xmppConnection.getTheRpcResponseQueue(packetId)
-					.poll(300, TimeUnit.SECONDS);
+					.poll(POLL_MAX_MS, TimeUnit.MILLISECONDS);
 			inputStream = new ByteArrayInputStream(response.getBytes());
 			return inputStream;
-		} catch (InterruptedException anEx) {
-			throw new XmlRpcException(anEx.getMessage());
+		} catch (InterruptedException e) {
+			throw new XmlRpcException(e.getMessage());
 		}
 	}
 
