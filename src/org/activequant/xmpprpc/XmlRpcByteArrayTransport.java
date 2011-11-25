@@ -69,15 +69,15 @@ public class XmlRpcByteArrayTransport extends XmlRpcStreamTransport {
 
 	@Override
 	protected InputStream getInputStream() throws XmlRpcException {
+		// have to wait for the response return ... must be a blocking call
+		String response = null;
 		try {
-			// have to wait for the response return ... must be a blocking call
-			String response = xmppConnection.getTheRpcResponseQueue(packetId)
-					.poll(POLL_MAX_MS, TimeUnit.MILLISECONDS);
-			inputStream = new ByteArrayInputStream(response.getBytes());
-			return inputStream;
+		    response = xmppConnection.getTheRpcResponseQueue(packetId).take();
 		} catch (InterruptedException e) {
-			throw new XmlRpcException(e.getMessage());
+		    throw new XmlRpcException(e.getMessage());
 		}
+		inputStream = new ByteArrayInputStream(response.getBytes());
+		return inputStream;
 	}
 
 	@Override
