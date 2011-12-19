@@ -35,7 +35,7 @@ import org.jivesoftware.smack.packet.IQ.Type;
 import org.xml.sax.SAXException;
 
 public class XmlRpcByteArrayTransport extends XmlRpcStreamTransport {
-	private static final int POLL_MAX_MS = 300;
+	private static final int POLLING_TIME = 300;
 	private ByteArrayInputStream inputStream;
 	private ByteArrayOutputStream outputStream;
 	private String packetId = null;
@@ -72,7 +72,10 @@ public class XmlRpcByteArrayTransport extends XmlRpcStreamTransport {
 		// have to wait for the response return ... must be a blocking call
 		String response = null;
 		try {
-		    response = xmppConnection.getTheRpcResponseQueue(packetId).take();
+		    while (response == null) {
+			 // FIXME Might want something smarter. Use monitors.
+		         response = xmppConnection.getTheRpcResponseQueue(packetId).poll(POLLING_TIME, TimeUnit.MILLISECONDS);
+		    }
 		} catch (InterruptedException e) {
 		    throw new XmlRpcException(e.getMessage());
 		}
